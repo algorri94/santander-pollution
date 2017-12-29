@@ -1,13 +1,12 @@
 package es.unican.santander.pollution;
 
 import org.apache.storm.Config;
-import org.apache.storm.LocalCluster;
+import org.apache.storm.StormSubmitter;
 import org.apache.storm.cassandra.bolt.CassandraWriterBolt;
 import org.apache.storm.kafka.spout.KafkaSpout;
 import org.apache.storm.kafka.spout.KafkaSpoutConfig;
 import org.apache.storm.topology.TopologyBuilder;
 import static org.apache.storm.cassandra.DynamicStatementBuilder.*;
-import org.apache.storm.cassandra.DynamicStatementBuilder.*;
 
 public class SantanderPollutionTopology {
     private static final String KAFKA_SPOUT = "KAFKA_SPOUT";
@@ -19,7 +18,7 @@ public class SantanderPollutionTopology {
     public static void main(String[] args) throws Exception {
         Config config = new Config();
         config.put("cassandra.keyspace", "santander-pollution");
-        config.put("cassandra.port", "");
+        config.put("cassandra.port", "9042");
 
         TopologyBuilder builder = new TopologyBuilder();
         //Spout that reads data from Kafka
@@ -51,11 +50,8 @@ public class SantanderPollutionTopology {
                         .with(fields("region", "timeframe"))
         )), 1);
 
-        LocalCluster cluster = new LocalCluster();
-        cluster.submitTopology("pollution", config, builder.createTopology());
+        StormSubmitter.submitTopology("pollution", config, builder.createTopology());
         Thread.sleep(60000);
-        cluster.killTopology("pollution");
-        cluster.shutdown();
         System.exit(0);
     }
 }
