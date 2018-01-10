@@ -1,5 +1,6 @@
 package es.unican.santander.pollution;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.cassandra.bolt.CassandraWriterBolt;
@@ -23,7 +24,8 @@ public class SantanderPollutionTopology {
         TopologyBuilder builder = new TopologyBuilder();
         //Spout that reads data from Kafka
         builder.setSpout(KAFKA_SPOUT, new KafkaSpout(KafkaSpoutConfig.builder("127.0.0.1:" + "9092",
-                                                                                    "pollution").build()), 1);
+                                                                                    "pollution")
+                .setProp(ConsumerConfig.GROUP_ID_CONFIG, "stormPollution").build()), 1);
         //Bolt that parses the data received from Kafka
         builder.setBolt(PARSER_BOLT, new StringLineParser()).shuffleGrouping(KAFKA_SPOUT);
         //Bolt that filters the wrong results and classifies the data in different region locations
