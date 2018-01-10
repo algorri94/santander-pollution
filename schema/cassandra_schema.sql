@@ -4,7 +4,7 @@ CREATE KEYSPACE santanderPollution WITH REPLICATION = {'class':'SimpleStrategy',
 										 'replication_factor':1};
 --  This is designed for a single node system so the replication is irrelevant
 
-USE santander-pollution;
+USE santanderPollution;
 
 CREATE TABLE lecturas (
     sensor_id int,
