@@ -37,7 +37,7 @@ public class SantanderPollutionTopology {
                 .with(fields("id", "lat", "lon", "no2", "ozone", "temp", "co", "particles", "region", "generated", "timeframe"))
         )), 1).shuffleGrouping(FILTER_BOLT);
         //Bolt that updates the current pollution's counters
-        builder.setBolt(WCOUNTER_BOLT, new CassandraWriterBolt(loggedBatch(
+        builder.setBolt(WCOUNTER_BOLT, new CassandraWriterBolt(counterBatch(
                 simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='no2' AND region=? AND timeframe=?;")
                 .with(fields("no2", "region", "timeframe")),
                 simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='ozone' AND region=? AND timeframe=?;")
