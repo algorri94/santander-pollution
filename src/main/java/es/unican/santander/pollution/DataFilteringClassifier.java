@@ -22,8 +22,8 @@ public class DataFilteringClassifier implements IBasicBolt {
         int id = (int) input.getValue(0);
         float lat = (float) input.getValue(1);
         float lon = (float) input.getValue(2);
-        int no2 = (int) input.getValue(3);
-        int ozone = (int) input.getValue(4);
+        float no2 = (float) input.getValue(3);
+        float ozone = (float) input.getValue(4);
         float temp = (float) input.getValue(5);
         float co = (float) input.getValue(6);
         float particles = (float) input.getValue(7);

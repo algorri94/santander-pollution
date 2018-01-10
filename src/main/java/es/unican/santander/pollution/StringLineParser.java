@@ -31,8 +31,8 @@ public class StringLineParser implements IBasicBolt {
         }
         float lat = Float.parseFloat(fields[3]);
         float lon = Float.parseFloat(fields[4]);
-        int no2 = Integer.parseInt(fields[5]);
-        int ozone = Integer.parseInt(fields[6]);
+        float no2 = Float.parseFloat(fields[5]);
+        float ozone = Float.parseFloat(fields[6]);
         float temp = Float.parseFloat(fields[9]);
         float co = Float.parseFloat(fields[10]);
         float particles = Float.parseFloat(fields[11]);
