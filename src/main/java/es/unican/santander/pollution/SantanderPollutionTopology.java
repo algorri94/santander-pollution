@@ -17,7 +17,7 @@ public class SantanderPollutionTopology {
 
     public static void main(String[] args) throws Exception {
         Config config = new Config();
-        config.put("cassandra.keyspace", "santander-pollution");
+        config.put("cassandra.keyspace", "santanderPollution");
         config.put("cassandra.port", "9042");
 
         TopologyBuilder builder = new TopologyBuilder();

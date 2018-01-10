@@ -1,6 +1,6 @@
-DROP KEYSPACE santander-pollution;
+DROP KEYSPACE santanderPollution;
 
-CREATE KEYSPACE santander-pollution WITH REPLICATION = {'class':'SimpleStrategy',
+CREATE KEYSPACE santanderPollution WITH REPLICATION = {'class':'SimpleStrategy',
 										 'replication_factor':1};
 --  This is designed for a single node system so the replication is irrelevant
 
@@ -21,7 +21,7 @@ CREATE TABLE lecturas (
     PRIMARY KEY (region, sensor_id, generated)
 );
 
-CREATE TABLE pollution-stats (
+CREATE TABLE pollutionStats (
     description text,
     timeframe timestamp,
     region int,
