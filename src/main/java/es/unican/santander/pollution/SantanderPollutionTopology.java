@@ -38,17 +38,17 @@ public class SantanderPollutionTopology {
         )), 1).shuffleGrouping(FILTER_BOLT);
         //Bolt that updates the current pollution's counters
         builder.setBolt(WCOUNTER_BOLT, new CassandraWriterBolt(loggedBatch(
-                simpleQuery("UPDATE pollution-stats SET val=val+? WHERE descripcion='no2' AND region=? AND timeframe=?;")
+                simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='no2' AND region=? AND timeframe=?;")
                 .with(fields("no2", "region", "timeframe")),
-                simpleQuery("UPDATE pollution-stats SET val=val+? WHERE descripcion='ozone' AND region=? AND timeframe=?;")
+                simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='ozone' AND region=? AND timeframe=?;")
                         .with(fields("ozone", "region", "timeframe")),
-                simpleQuery("UPDATE pollution-stats SET val=val+? WHERE descripcion='temp' AND region=? AND timeframe=?;")
+                simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='temp' AND region=? AND timeframe=?;")
                         .with(fields("temp", "region", "timeframe")),
-                simpleQuery("UPDATE pollution-stats SET val=val+? WHERE descripcion='co' AND region=? AND timeframe=?;")
+                simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='co' AND region=? AND timeframe=?;")
                         .with(fields("co", "region", "timeframe")),
-                simpleQuery("UPDATE pollution-stats SET val=val+? WHERE descripcion='particles' AND region=? AND timeframe=?;")
+                simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='particles' AND region=? AND timeframe=?;")
                         .with(fields("particles", "region", "timeframe")),
-                simpleQuery("UPDATE pollution-stats SET val=val+1 WHERE descripcion='tuples' AND region=? AND timeframe=?;")
+                simpleQuery("UPDATE pollutionstats SET val=val+1 WHERE description='tuples' AND region=? AND timeframe=?;")
                         .with(fields("region", "timeframe"))
         )), 1);
 
