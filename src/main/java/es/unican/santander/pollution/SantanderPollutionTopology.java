@@ -50,7 +50,7 @@ public class SantanderPollutionTopology {
                         .with(fields("particles", "region", "timeframe")),
                 simpleQuery("UPDATE pollutionstats SET val=val+1 WHERE description='tuples' AND region=? AND timeframe=?;")
                         .with(fields("region", "timeframe"))
-        )), 1);
+        )), 1).shuffleGrouping(FILTER_BOLT);
 
         StormSubmitter.submitTopology("pollution", config, builder.createTopology());
         Thread.sleep(60000);
