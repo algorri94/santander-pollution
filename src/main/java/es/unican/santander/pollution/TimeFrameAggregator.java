@@ -30,18 +30,21 @@ public class TimeFrameAggregator implements IRichBolt {
     }
 
     public void execute(Tuple input) {
-        long nextFrame = input.getLongByField("timeframe");
-        if(currentFrame != 0 && currentFrame!=nextFrame){
-            Map<String, Float> averages = calculateAverages(tuples);
-            long timeframe = currentFrame;
-            currentFrame = nextFrame;
-            tuples.clear();
-            collector.emit(tuple(averages.get("no2"), averages.get("ozone"),averages.get("temp"),
-                    averages.get("co"),averages.get("particles"), timeframe, region));
-        } else {
-            currentFrame = nextFrame;
-            tuples.add(input);
-            collector.ack(input);
+        if(region == input.getIntegerByField("region")) {
+            long nextFrame = input.getLongByField("timeframe");
+
+            if (currentFrame != 0 && currentFrame != nextFrame) {
+                Map<String, Float> averages = calculateAverages(tuples);
+                long timeframe = currentFrame;
+                currentFrame = nextFrame;
+                tuples.clear();
+                collector.emit(tuple(averages.get("no2"), averages.get("ozone"), averages.get("temp"),
+                        averages.get("co"), averages.get("particles"), timeframe, region));
+            } else {
+                currentFrame = nextFrame;
+                tuples.add(input);
+                collector.ack(input);
+            }
         }
     }
 
