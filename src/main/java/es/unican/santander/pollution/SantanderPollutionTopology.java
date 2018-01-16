@@ -14,7 +14,9 @@ public class SantanderPollutionTopology {
     private static final String PARSER_BOLT = "LINE_PARSER_BOLT";
     private static final String FILTER_BOLT = "FILTER_CLASSIFIER_BOLT";
     private static final String WLECTURAS_BOLT = "WRITE_LECTURAS_BOLT";
-    private static final String WCOUNTER_BOLT = "WRITE_COUNTER_BOLT";
+    private static final String WAGG_BOLT = "WRITE_AGGREGATION_BOLT";
+    private static final String AGG_BOLT = "AGGREGATION_BOLT";
+    private static final int[] regions = {0,1,2,3,4,5};
 
     public static void main(String[] args) throws Exception {
         Config config = new Config();
@@ -36,21 +38,14 @@ public class SantanderPollutionTopology {
                     "VALUES (?,?,?,?,?,?,?,?,?,?,?);")
                 .with(fields("id", "lat", "lon", "no2", "ozone", "temp", "co", "particles", "region", "generated", "timeframe"))
         )), 1).shuffleGrouping(FILTER_BOLT);
-        //Bolt that updates the current pollution's counters
-        builder.setBolt(WCOUNTER_BOLT, new CassandraWriterBolt(counterBatch(
-                simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='no2' AND region=? AND timeframe=?;")
-                .with(fields("no2", "region", "timeframe")),
-                simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='ozone' AND region=? AND timeframe=?;")
-                        .with(fields("ozone", "region", "timeframe")),
-                simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='temp' AND region=? AND timeframe=?;")
-                        .with(fields("temp", "region", "timeframe")),
-                simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='co' AND region=? AND timeframe=?;")
-                        .with(fields("co", "region", "timeframe")),
-                simpleQuery("UPDATE pollutionstats SET val=val+? WHERE description='particles' AND region=? AND timeframe=?;")
-                        .with(fields("particles", "region", "timeframe")),
-                simpleQuery("UPDATE pollutionstats SET val=val+1 WHERE description='tuples' AND region=? AND timeframe=?;")
-                        .with(fields("region", "timeframe"))
-        )), 1).shuffleGrouping(FILTER_BOLT);
+        //Bolt that aggregates the measures that belong to the same timeframe
+        for(int r: regions) {
+            builder.setBolt(AGG_BOLT+r, new TimeFrameAggregator(r), 1).shuffleGrouping(FILTER_BOLT);
+            builder.setBolt(WAGG_BOLT+r,new CassandraWriterBolt(async(
+                    simpleQuery("INSERT INTO pollutionAgg (no2, ozone, temp, co, particles, timeframe, region)" +
+                            "VALUES (?,?,?,?,?,?,?);").with(fields("no2","ozone","temp","co","particles","timeframe","region"))
+            )),1).shuffleGrouping(AGG_BOLT+r);
+        }
 
         StormSubmitter.submitTopology("pollution", config, builder.createTopology());
         Thread.sleep(60000);

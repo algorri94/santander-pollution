@@ -21,12 +21,15 @@ CREATE TABLE lecturas (
     PRIMARY KEY (region, sensor_id, generated)
 );
 
-CREATE TABLE pollutionStats (
-    description text,
+CREATE TABLE pollutionAgg (
+    no2 float,
+    ozone float,
+    temp float,
+    co float,
+    particles float,
     timeframe timestamp,
     region int,
-    val counter,
-    PRIMARY KEY ((region, timeframe), description)
-        -- Every single batch that updates the counters updates all stats in the same region and timeframe.
+    PRIMARY KEY (region, timeframe)
+        -- Every single batch updates the aggregations for all the measures in the same region and timeframe.
         -- Therefore, the best partitioning strategy is putting them all together in the same partition.
 );
