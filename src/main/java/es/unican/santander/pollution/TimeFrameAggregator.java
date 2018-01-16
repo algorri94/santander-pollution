@@ -38,6 +38,7 @@ public class TimeFrameAggregator implements IRichBolt {
                 long timeframe = currentFrame;
                 currentFrame = nextFrame;
                 tuples.clear();
+                tuples.add(input);
                 collector.emit(tuple(averages.get("no2"), averages.get("ozone"), averages.get("temp"),
                         averages.get("co"), averages.get("particles"), timeframe, region));
             } else {
